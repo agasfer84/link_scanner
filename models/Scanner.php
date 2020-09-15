@@ -1,5 +1,5 @@
 <?php
-
+namespace models;
 
 class Scanner
 {
@@ -8,9 +8,8 @@ class Scanner
     {
         $directories = new Directories();
         $files = new Files();
-        $projects = new Projects();
-        $base_directories = $directories->getByStatus(Directories::NONCHECKED_STATUS);
-        $project = $projects->getOne();
+        $base_directories = Directories::getByStatus(Directories::NONCHECKED_STATUS);
+        $project = Projects::getOne();
 
         foreach ($base_directories as $base_dir) {
             $dir = iconv ("utf-8", "cp1251", $base_dir["path"]);
@@ -20,20 +19,20 @@ class Scanner
                 $path = mb_convert_encoding($dir . DIRECTORY_SEPARATOR . $value, "utf-8", "cp1251");
 
                 if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
-                    if (!$directories->findByPath($path)){
-                        $directories->create($path, Directories::NONCHECKED_STATUS, $project->id);
+                    if (!Directories::findByPath($path, $project["id"])){
+                        $directories->create($path, Directories::NONCHECKED_STATUS, $project["id"]);
                     }
                 } else {
-                    if (!$files->findByPath($path)) {
-                        $file_extension = strtolower($this->getExtension($path));
+                    if (!Files::findByPath($path)) {
+                        $file_extension = strtolower(self::getExtension($path));
 
                         if (in_array($file_extension, $files->allowed_extensions))
-                        $files->create($path, Files::NONCHECKED_STATUS, $base_dir->id);
+                        $files->create($path, Files::NONCHECKED_STATUS, $base_dir["id"]);
                     }
                 }
-
-                $directories->setStatus($path, Directories::CHECKED_STATUS);
             }
+
+            $directories->setStatus($base_dir["id"], Directories::CHECKED_STATUS);
         }
     }
 
@@ -41,18 +40,18 @@ class Scanner
     {
         $files = new Files();
         $links = new Links();
-        $base_files = $files->getByStatus(Files::NONCHECKED_STATUS);
+        $base_files = Files::getByStatus(Files::NONCHECKED_STATUS);
 
         foreach ($base_files as $base_file) {
             $content_links = self::getLinks($base_file["path"]);
 
             if (count($content_links) > 0) {
                 foreach ($content_links as $link) {
-                    $links->create($link, $base_file->id);
+                    $links->create($link, $base_file["id"]);
                 }
             }
 
-            $files->setStatus($base_file->id, Files::CHECKED_STATUS);
+            $files->setStatus($base_file["id"], Files::CHECKED_STATUS);
         }
     }
 
@@ -69,7 +68,7 @@ class Scanner
         return [];
     }
 
-    function getExtension($filename) {
+    public static function getExtension($filename) {
         return end(explode(".", $filename));
     }
 

@@ -1,0 +1,1 @@
+start /min php E:\repositories\home_dev\link_scanner\cron-files.php

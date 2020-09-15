@@ -1,6 +1,7 @@
 <?php
+namespace core;
 
-class Database extends PDO
+class Database extends \PDO
 {
 
     protected static $_instance = null;
@@ -17,7 +18,7 @@ class Database extends PDO
     public function connection() {
         try {
             parent::__construct("mysql:host={$this->db_host};dbname={$this->db_name};charset=utf8", $this->db_user, $this->db_pass);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo $e->getMessage();
         }
     }
