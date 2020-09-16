@@ -58,4 +58,24 @@ class Files extends BaseProvider
         return $result;
     }
 
+    public static function getForATagReplace(): array
+    {
+        $table = self::getTable();
+        $links_table = Links::getTable();
+        $directories_table = Directories::getTable();
+        $projects_table = Projects::getTable();
+
+        $query = "SELECT DISTINCT f.*, p.charset FROM $table f 
+        INNER JOIN $links_table l ON l.file_id = f.id 
+        INNER JOIN $directories_table d ON d.id = f.directory_id
+        INNER JOIN $projects_table p ON p.id = d.project_id
+        WHERE f.status = :status AND l.status = :links_status 
+        LIMIT 10";
+        $result = self::getDb()->prepare($query);
+        $result->setFetchMode(\PDO::FETCH_ASSOC);
+        $result->execute(["status" => self::CHECKED_STATUS, "links_status" => Links::NONCHECKED_STATUS]);
+
+        return $result->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
 }

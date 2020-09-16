@@ -6,6 +6,9 @@ use core\BaseProvider;
 
 class Links extends BaseProvider
 {
+    const NONCHECKED_STATUS = 0;
+    const APPROVED_STATUS = 1;
+
     public static function getTable(): string
     {
         return 'link_links';
@@ -23,10 +26,10 @@ class Links extends BaseProvider
     {
         $table = self::getTable();
         $files_table = Files::getTable();
-        $query = "SELECT (@row_number:=@row_number + 1) AS num, l.link, f.path AS filepath FROM $table l LEFT JOIN $files_table f ON f.id = l.file_id, (SELECT @row_number:=0) AS t";
+        $query = "SELECT (@row_number:=@row_number + 1) AS num, l.link, f.path AS filepath FROM $table l LEFT JOIN $files_table f ON f.id = l.file_id, (SELECT @row_number:=0) AS t WHERE           l.status = :status";
         $result = self::getDb()->prepare($query);
         $result->setFetchMode(\PDO::FETCH_ASSOC);
-        $result->execute();
+        $result->execute(["status" => self::NONCHECKED_STATUS]);
 
         return $result->fetchAll(\PDO::FETCH_ASSOC);
     }

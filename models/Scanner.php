@@ -44,7 +44,7 @@ class Scanner
         $base_files = Files::getByStatus(Files::NONCHECKED_STATUS);
 
         foreach ($base_files as $base_file) {
-            $content_links = self::getLinks($base_file["path"]);
+            $content_links = PageParser::getLinks($base_file["path"]);
 
             if (count($content_links) > 0) {
                 foreach ($content_links as $link) {
@@ -56,19 +56,6 @@ class Scanner
         }
     }
 
-    public static function getLinks(string $file_path): array
-    {
-        $file_path = iconv ("utf-8", "cp1251", $file_path);
-        $content = file_get_contents($file_path);
-        $pattern = '~[a-z]+://\S+~';
-
-        if(preg_match_all($pattern, $content, $out))
-        {
-            return $out[0];
-        }
-
-        return [];
-    }
 
     public static function getExtension(string $filename): string
     {
