@@ -1,24 +1,25 @@
 <?php
+declare(strict_types = 1);
 namespace models;
 
 use core\BaseProvider;
 
 class Links extends BaseProvider
 {
-    public static function getTable()
+    public static function getTable(): string
     {
         return 'link_links';
     }
 
-    public function create($link, $file_id)
+    public function create(string $link, int $file_id)
     {
         $table = self::getTable();
         $query = "INSERT INTO $table (link, file_id) VALUES (:link, :file_id)";
         $result = self::getDb()->prepare($query);
-        $result->execute(["link" => $link, "file_id" => $file_id]);
+        $result->execute(["link" => strip_tags($link), "file_id" => $file_id]);
     }
 
-    public static function getAll()
+    public static function getAll(): array
     {
         $table = self::getTable();
         $files_table = Files::getTable();
@@ -30,14 +31,14 @@ class Links extends BaseProvider
         return $result->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public static function toTable($array)
+    public static function toTable(array $array): string
     {
-        $body = "<table border='1' bordercolor='black' cellspacing='0'><tr>";
+        $body = "<div style='max-width: 100%;'><table border='1' bordercolor='black' cellspacing='0' style='max-width: 100%;table-layout: fixed;'><tr>";
         $labels = ["num" => "№", "filepath" => "Файл", "link" => "Ссылка"];
         $keys = array_keys($labels);
 
         foreach ($labels as $label) {
-            $body .="<th>$label</th>";
+            $body .="<th style='max-width: 600px;word-wrap: break-word;'>$label</th>";
         }
 
         $body .= "</tr>";
@@ -46,13 +47,13 @@ class Links extends BaseProvider
             $body .= "<tr>";
 
             foreach ($keys as $key) {
-                $body .= "<td>$item[$key]</td>";
+                $body .= "<td style='max-width: 600px;word-wrap: break-word;'>$item[$key]</td>";
             }
 
             $body .= "</tr>";
         }
 
-        $body .= "</table>";
+        $body .= "</table></div>";
 
         return $body;
     }

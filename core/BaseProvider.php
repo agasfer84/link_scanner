@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace core;
 
 class BaseProvider
@@ -10,7 +11,7 @@ class BaseProvider
         self::$_db = new Database();
     }
 
-    public static function getDb()
+    public static function getDb(): Database
     {
         return self::$_db;
     }

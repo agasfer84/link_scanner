@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace models;
 
 class Scanner
@@ -20,19 +21,19 @@ class Scanner
 
                 if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
                     if (!Directories::findByPath($path, $project["id"])){
-                        $directories->create($path, Directories::NONCHECKED_STATUS, $project["id"]);
+                        $directories->create($path, Directories::NONCHECKED_STATUS, (int)$project["id"]);
                     }
                 } else {
                     if (!Files::findByPath($path)) {
                         $file_extension = strtolower(self::getExtension($path));
 
                         if (in_array($file_extension, $files->allowed_extensions))
-                        $files->create($path, Files::NONCHECKED_STATUS, $base_dir["id"]);
+                        $files->create($path, Files::NONCHECKED_STATUS, (int)$base_dir["id"]);
                     }
                 }
             }
 
-            $directories->setStatus($base_dir["id"], Directories::CHECKED_STATUS);
+            $directories->setStatus((int)$base_dir["id"], Directories::CHECKED_STATUS);
         }
     }
 
@@ -47,15 +48,16 @@ class Scanner
 
             if (count($content_links) > 0) {
                 foreach ($content_links as $link) {
-                    $links->create($link, $base_file["id"]);
+                    $links->create($link, (int)$base_file["id"]);
                 }
             }
 
-            $files->setStatus($base_file["id"], Files::CHECKED_STATUS);
+            $files->setStatus((int)$base_file["id"], Files::CHECKED_STATUS);
         }
     }
 
-    public static function getLinks($file_path) {
+    public static function getLinks(string $file_path): array
+    {
         $file_path = iconv ("utf-8", "cp1251", $file_path);
         $content = file_get_contents($file_path);
         $pattern = '~[a-z]+://\S+~';
@@ -68,10 +70,9 @@ class Scanner
         return [];
     }
 
-    public static function getExtension($filename) {
+    public static function getExtension(string $filename): string
+    {
         return end(explode(".", $filename));
     }
-
-
 
 }

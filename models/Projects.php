@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace models;
 
 use core\BaseProvider;
@@ -9,12 +10,12 @@ class Projects extends BaseProvider
     const NONCHECKED_STATUS = 0;
     const CHECKED_STATUS = 1;
 
-    public static function getTable()
+    public static function getTable(): string
     {
         return 'link_files';
     }
 
-    public static function getOne()
+    public static function getOne(): ?array
     {
         $table = self::getTable();
         $query = "SELECT * FROM $table WHERE status = :status";

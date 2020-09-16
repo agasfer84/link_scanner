@@ -9,4 +9,4 @@ require_once($_SERVER['DOCUMENT_ROOT']."/models/Links.php");
 require_once($_SERVER['DOCUMENT_ROOT']."/models/Scanner.php");
 
 $BaseProvider = new \core\BaseProvider();
-(new \models\Scanner())->scanDirectories();
+(new \models\Scanner())->scanFiles();
