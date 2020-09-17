@@ -12,7 +12,7 @@ class Projects extends BaseProvider
 
     public static function getTable(): string
     {
-        return 'link_files';
+        return 'link_projects';
     }
 
     public static function getOne(): ?array

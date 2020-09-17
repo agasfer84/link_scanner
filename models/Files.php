@@ -11,6 +11,8 @@ class Files extends BaseProvider
 
     const NONCHECKED_STATUS = 0;
     const CHECKED_STATUS = 1;
+    const CLEANED_STATUS = 2;
+    const PROCESSED_STATUS = 3;
 
     public static function getTable(): string
     {
@@ -20,7 +22,10 @@ class Files extends BaseProvider
     public static function getByStatus(int $status): array
     {
         $table = self::getTable();
-        $query = "SELECT * FROM $table WHERE status = :status LIMIT " . self::$_rows_get_limit;
+        $directories_table = Directories::getTable();
+        $query = "SELECT f.*, d.project_id FROM $table f 
+        INNER JOIN $directories_table d ON d.id = f.directory_id  
+        WHERE f.status = :status LIMIT " . self::$_rows_get_limit;
         $result = self::getDb()->prepare($query);
         $result->setFetchMode(\PDO::FETCH_ASSOC);
         $result->execute(["status" => $status]);
@@ -39,8 +44,7 @@ class Files extends BaseProvider
     public function setStatus(int $id, int $status)
     {
         $table = self::getTable();
-        $nonchecked = self::NONCHECKED_STATUS;
-        $query = "UPDATE $table SET status = :status WHERE id = :id AND status = $nonchecked LIMIT 1";
+        $query = "UPDATE $table SET status = :status WHERE id = :id LIMIT 1";
         $result = self::getDb()->prepare($query);
         $result->execute(["id" => $id, "status" => $status]);
     }
@@ -67,15 +71,21 @@ class Files extends BaseProvider
 
         $query = "SELECT DISTINCT f.*, p.charset FROM $table f 
         INNER JOIN $links_table l ON l.file_id = f.id 
-        INNER JOIN $directories_table d ON d.id = f.directory_id
-        INNER JOIN $projects_table p ON p.id = d.project_id
+        INNER JOIN $directories_table d ON d.id = f.directory_id 
+        INNER JOIN $projects_table p ON p.id = d.project_id 
         WHERE f.status = :status AND l.status = :links_status 
-        LIMIT 10";
+        and f.id=81
+        LIMIT 1";
         $result = self::getDb()->prepare($query);
         $result->setFetchMode(\PDO::FETCH_ASSOC);
         $result->execute(["status" => self::CHECKED_STATUS, "links_status" => Links::NONCHECKED_STATUS]);
 
         return $result->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public static function getExtension(string $filename): string
+    {
+        return end(explode(".", $filename));
     }
 
 }

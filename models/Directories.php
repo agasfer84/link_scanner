@@ -16,13 +16,13 @@ class Directories extends BaseProvider
         return 'link_directories';
     }
 
-    public static function getByStatus(int $status): array
+    public static function getByStatus(int $status, int $project_id): array
     {
         $table = self::getTable();
-        $query = "SELECT * FROM $table WHERE status = :status LIMIT " . self::$_rows_get_limit;
+        $query = "SELECT * FROM $table WHERE project_id = :project_id AND status = :status LIMIT " . self::$_rows_get_limit;
         $result = self::getDb()->prepare($query);
         $result->setFetchMode(\PDO::FETCH_ASSOC);
-        $result->execute(["status" => $status]);
+        $result->execute(["project_id" => $project_id, "status" => $status]);
 
         return $result->fetchAll(\PDO::FETCH_ASSOC);
     }

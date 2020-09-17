@@ -7,22 +7,16 @@ require_once($_SERVER['DOCUMENT_ROOT']."/models/Files.php");
 require_once($_SERVER['DOCUMENT_ROOT']."/models/Links.php");
 require_once($_SERVER['DOCUMENT_ROOT']."/models/Scanner.php");
 require_once($_SERVER['DOCUMENT_ROOT']."/models/PageParser.php");
+require_once($_SERVER['DOCUMENT_ROOT']."/models/Exceptions.php");
 
 $BaseProvider = new \core\BaseProvider();
 
-//$file_path = 'E:\repositories\home_dev\eurohouse63.ru\building\komfortnoe-zhilyo-iz-ocilindrovannogo-brevna\index.php';
-//$file_path = 'E:\repositories\home_dev\eurohouse63.ru\building\proizvodstvo-karkasno-shhitovykh-domov\index.php';
-//$parser = \models\PageParser::replaceATags($file_path);
-//print_r((string)$parser);
 
-$files_for_replace = \models\Files::getForATagReplace();
-print_r($files_for_replace);
+//$scanner = (new \models\Scanner())->scanDirectories();
+//$scanner = (new \models\Scanner())->scanFiles();
+$scanner = (new \models\Scanner())->cleanLinks();
 
-
-//$scanner = (new Scanner())->scanDirectories();
-//$scanner = (new Scanner())->scanFiles();
-
-$table = \models\Links::toTable(\models\Links::getAll());
+$table = \models\Links::toTable(\models\Links::getNonchecked());
 echo($table);
 
 

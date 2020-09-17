@@ -1,0 +1,10 @@
+<?php
+require_once(__DIR__."/core/Database.php");
+require_once(__DIR__."/core/BaseProvider.php");
+require_once(__DIR__."/models/Projects.php");
+require_once(__DIR__."/models/Directories.php");
+require_once(__DIR__."/models/Files.php");
+require_once(__DIR__."/models/Links.php");
+require_once(__DIR__."/models/Scanner.php");
+require_once(__DIR__."/models/PageParser.php");
+require_once(__DIR__."/models/Exceptions.php");

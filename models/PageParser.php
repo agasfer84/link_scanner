@@ -10,16 +10,19 @@ use DOMElement;
 class PageParser
 {
 
-    public static function replaceATags(string $file_path, string $charset = 'cp1251') :string
+    public static function replaceATags(string $file_path, string $charset = 'utf8')
     {
-        $doc = new DomDocument();
+        $doc = new DomDocument('1.0', $charset);
+        $doc->formatOutput = true;
         //отключаем ошибки
         libxml_use_internal_errors(true);
         // Нужно проверить документ перед тем как ссылаться по идентификатору
         $doc->validateOnParse = true;
         $content = file_get_contents($file_path);
-        $html = mb_convert_encoding($content, 'HTML-ENTITIES', $charset);
-        $doc->loadHTML($html);
+        $content = mb_convert_encoding($content, 'HTML-ENTITIES', $charset);
+
+        //return $html;
+        $doc->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset='. $charset . '">' . $content); //cirillic to ASCII bug
         $items = $doc->getElementsByTagName('a');
 
         while ($items->length) {
@@ -41,5 +44,12 @@ class PageParser
         }
 
         return [];
+    }
+
+    public static function searchInContent(string $content, string $find) :bool
+    {
+        $pos = strpos($content, $find);
+
+        return !($pos === false);
     }
 }

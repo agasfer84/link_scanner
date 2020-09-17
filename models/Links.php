@@ -8,6 +8,7 @@ class Links extends BaseProvider
 {
     const NONCHECKED_STATUS = 0;
     const APPROVED_STATUS = 1;
+    const DELETED_STATUS = 2;
 
     public static function getTable(): string
     {
@@ -22,7 +23,7 @@ class Links extends BaseProvider
         $result->execute(["link" => strip_tags($link), "file_id" => $file_id]);
     }
 
-    public static function getAll(): array
+    public static function getNonchecked(): array
     {
         $table = self::getTable();
         $files_table = Files::getTable();
@@ -32,6 +33,27 @@ class Links extends BaseProvider
         $result->execute(["status" => self::NONCHECKED_STATUS]);
 
         return $result->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function deleteByFileId(int $file_id)
+    {
+        $table = self::getTable();
+        $query = "DELETE FROM $table WHERE file_id = :file_id";
+        $result = self::getDb()->prepare($query);
+        $result->execute(["file_id" => $file_id]);
+    }
+
+    public static function findByFileIdAndLinkAndStatus(int $file_id, string $link, int $status): ?array
+    {
+        $table = self::getTable();
+        $query = "SELECT * FROM $table WHERE file_id = :file_id AND link = :link AND status = :status";
+        $array = self::getDb()->prepare($query);
+        $array->setFetchMode(\PDO::FETCH_ASSOC);
+        $array->execute(["file_id" => $file_id, "link" => $link, "status" => $status]);
+        $result = $array->fetchAll(\PDO::FETCH_ASSOC);
+        $result = (!empty($result)) ? $result : null;
+
+        return $result;
     }
 
     public static function toTable(array $array): string

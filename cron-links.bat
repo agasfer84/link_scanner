@@ -1,0 +1,1 @@
+start /min E:\server\php7.3.5\php.exe E:\repositories\home_dev\link_scanner\cron-links.php %*
