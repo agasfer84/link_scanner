@@ -74,8 +74,7 @@ class Files extends BaseProvider
         INNER JOIN $directories_table d ON d.id = f.directory_id 
         INNER JOIN $projects_table p ON p.id = d.project_id 
         WHERE f.status = :status AND l.status = :links_status 
-        and f.id=81
-        LIMIT 1";
+        LIMIT " . self::$_rows_get_limit;
         $result = self::getDb()->prepare($query);
         $result->setFetchMode(\PDO::FETCH_ASSOC);
         $result->execute(["status" => self::CHECKED_STATUS, "links_status" => Links::NONCHECKED_STATUS]);

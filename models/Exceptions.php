@@ -9,7 +9,7 @@ class Exceptions extends BaseProvider
 
     public static function getTable(): string
     {
-        return 'link_excetions';
+        return 'link_exceptions';
     }
 
     public static function getByProjectId(int $project_id): array

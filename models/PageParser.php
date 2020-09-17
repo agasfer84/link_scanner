@@ -22,14 +22,14 @@ class PageParser
         $content = mb_convert_encoding($content, 'HTML-ENTITIES', $charset);
 
         //return $html;
-        $doc->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset='. $charset . '">' . $content); //cirillic to ASCII bug
+        $doc->loadHTML($content); //cirillic to ASCII bug here
         $items = $doc->getElementsByTagName('a');
 
         while ($items->length) {
             $items->item(0)->parentNode->replaceChild(new \DOMText($items->item(0)->textContent), $items->item(0));
         }
 
-        return $doc->saveHTML();
+        return html_entity_decode($doc->saveHTML()); //decode ASCII
     }
 
     public static function getLinks(string $file_path): array

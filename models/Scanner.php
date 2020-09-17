@@ -68,13 +68,13 @@ class Scanner
     public function primaryScanFiles()
     {
         $base_files = Files::getByStatus(Files::NONCHECKED_STATUS);
-        $this->scanFiles($base_files, Files::CHECKED_STATUS);
+        $this->scanFiles($base_files, Files::CHECKED_STATUS, false);
     }
 
     public function reScanFiles()
     {
         $base_files = Files::getByStatus(Files::CHECKED_STATUS);
-        $this->scanFiles($base_files, Files::CLEANED_STATUS);
+        $this->scanFiles($base_files, Files::CLEANED_STATUS, true);
     }
 
     public function cleanLinks()
@@ -84,9 +84,17 @@ class Scanner
 
         foreach ($base_files as $base_file) {
             $file_new_content = PageParser::replaceATags($base_file["path"], $base_file["charset"]);
-            file_put_contents($base_file["path"]. ".test", $file_new_content);
-            //$links->deleteByFileId((int)$base_file["id"]);
-            //$this->scanFiles([$base_file], Files::CLEANED_STATUS);
+            file_put_contents($base_file["path"], $file_new_content);
+            $nonchecked_links = Links::findByFileIdAndStatus((int)$base_file["id"], Links::NONCHECKED_STATUS);
+
+            foreach ($nonchecked_links as $link) {
+                if (!PageParser::searchInContent($file_new_content, $link["link"]))
+                {
+                    $links->setStatus((int)$link["id"], Links::DELETED_STATUS);
+                }
+            }
+
+            $this->scanFiles([$base_file], Files::CLEANED_STATUS);
         }
     }
 
