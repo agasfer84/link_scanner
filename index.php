@@ -14,7 +14,7 @@ $BaseProvider = new \core\BaseProvider();
 
 //$scanner = (new \models\Scanner())->scanDirectories();
 //$scanner = (new \models\Scanner())->scanFiles();
-$scanner = (new \models\Scanner())->cleanLinks();
+//$scanner = (new \models\Scanner())->cleanLinks();
 
 $table = \models\Links::toTable(\models\Links::getNonchecked());
 echo($table);
